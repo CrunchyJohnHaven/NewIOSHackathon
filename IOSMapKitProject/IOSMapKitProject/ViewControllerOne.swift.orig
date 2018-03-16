@@ -1,0 +1,165 @@
+//
+//  ViewController.swift
+//  IOSMapKitProject
+//
+//  Created by john bradley on 3/15/18.
+//  Copyright © 2018 john. All rights reserved.
+//
+
+import UIKit
+import MapKit
+import Contacts
+
+
+class ViewControllerOne: UIViewController {
+    
+    var location: Artwork?
+    @IBOutlet weak var labelOutlet: UILabel!
+    @IBOutlet weak var mapView: MKMapView!
+    let initialLocation = CLLocation(latitude: 37.3753590, longitude: -121.910980)
+    
+    //////
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        centerMapOnLocation(location: initialLocation)
+        mapView.delegate = self
+        //Create pin for
+        let artwork = Artwork(title: "Coding Dojo Silicon Valley",
+            tag: "Click to investigate The Dojo!",
+            discipline: "Home",
+            shortNextClue: "An 'inmate' at The Dojo says MC has friends in airline industry.",
+            longNextClue: "One of the Dojo inmates has little love for MC and his cryptic online tutorials. He tells you that he overheard MC mention a friend in the airline industry. That will be enough to go off of.",
+            eventDescription: "Your services have been enlisted to find the notorious fugitive 'MC' who has recently escaped from his dojo prison. What drives this fugitive? Where is he going? Whatever it is, you have received your first clue.",
+            image: "http://URL/CodingDojo-image...",
+            identifyer: 1,
+            coordinate: CLLocationCoordinate2D(latitude: 37.3753590, longitude: -121.910980))
+        
+            mapView.addAnnotation(artwork)
+    
+        let artwork2 = Artwork(title: "San Jose International Airport",
+                tag: "'MC' is running into Terminal A!.",
+                discipline: "Airport",
+                shortNextClue: "An airline employee saw MC near the SEATAC Terminal.",
+                longNextClue: "A baggage handler tells you that he saw a man running on the tarmac towards a plane headed to Seattle-Tacoma International Airport.",
+                eventDescription: "Evidence suggests that if you catch the next flight your next opportunity to catch MC might come at the terminal in the coffee capital of the world located just to the East of Vashon Island in Pugeout Sound.",
+                image: "http://URL/SJAirport/Image...",
+                identifyer: 2,
+                coordinate: CLLocationCoordinate2D(latitude: 37.3639470, longitude: -121.9289380))
+    
+            mapView.addAnnotation(artwork2)
+        
+<<<<<<< HEAD
+=======
+        let artwork3 = Artwork(title: "Seattle Tacoma International Airport",
+                               tag: "There's 'MC' on the tarmac!",
+                               discipline: "SeattleAirport",
+                               shortNextClue: "An .",
+                               longNextClue: "A baggage handler tells you that he saw a man running on the tarmac towards a plane headed to Seattle-Tacoma International Airport.",
+                               eventDescription: "Evidence suggests that if you catch the next flight your next opportunity to catch MC might come at the terminal in the coffee capital of the world located just to the East of Vashon Island in Pugeout Sound.",
+                               image: "http://URL/SJAirport/Image...",
+                               identifyer: 3,
+                               coordinate: CLLocationCoordinate2D(latitude: 47.4502500, longitude: -122.3088170))
+        
+        mapView.addAnnotation(artwork3)
+        
+        let artwork4 = Artwork(title: "Steelhead Diner at Pikes Place Market",
+                               tag: "'There's 'MC' on the tarmac!",
+                               discipline: "SeattleAirport",
+                               shortNextClue: "An airline employee saw MC near the SEATAC Terminal.",
+                               longNextClue: "A baggage handler tells you that he saw a man running on the tarmac towards a plane headed to Seattle-Tacoma International Airport.",
+                               eventDescription: "Evidence suggests that if you catch the next flight to Seattle, your next opportunity to catch MC might come at the terminal in the coffee capital of the world located just to the East of Vashon Island in Pugeout Sound.",
+                               image: "http://URL/SJAirport/Image...",
+                               identifyer: 4,
+                               coordinate: CLLocationCoordinate2D(latitude: 47.6095490, longitude: -122.3411820))
+        
+        mapView.addAnnotation(artwork4)
+>>>>>>> origin/master
+    }
+
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+    }
+   ///////
+    
+    let regionRadius: CLLocationDistance = 1000
+    func centerMapOnLocation(location: CLLocation) {
+        let coordinateRegion = MKCoordinateRegionMakeWithDistance(location.coordinate, regionRadius, regionRadius)
+        mapView.setRegion(coordinateRegion, animated: true)
+    }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "ShowClue" {
+            let navigationController = segue.destination as! UINavigationController
+            let viewControllerTwo = navigationController.topViewController as! ViewControllerTwo
+            viewControllerTwo.delegate = self
+            viewControllerTwo.location = location
+            
+//           self.location = view.annotation as! Artwork
+//            print("self.location.longNextClue: ",self.location.longNextClue)
+//            print("self.location.description: ", self.location.description)
+//            print("self.location.title: ", self.location.title!)
+//            print("self.location.image: ", self.location.image!)
+//            print("self.location.identifyer: ", self.location.identifyer)
+//            print("self.location.discipline: ", self.location.discipline)
+//            print("self.location.coordinate: ", self.location.coordinate)
+//            print("self.location.tag: ", self.location.tag)
+            
+        }
+    }
+    @IBAction func menuButtonPressen(_ sender: UIButton) {
+        performSegue(withIdentifier: "MenuSegue", sender:  self)
+    }
+    
+
+
+
+}
+extension ViewControllerOne: MKMapViewDelegate {
+    // 1 - gets called for every annotation added
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        // 2
+        guard let annotation = annotation as? Artwork else { return nil }
+        // 3
+        let identifier = "marker"
+        var view: MKMarkerAnnotationView
+        // 4
+        if let dequeuedView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier)
+            as? MKMarkerAnnotationView {
+            dequeuedView.annotation = annotation
+            view = dequeuedView
+        } else {
+            // 5
+            view = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+            view.canShowCallout = true
+            view.calloutOffset = CGPoint(x: -5, y: 5)
+            view.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
+        }
+        return view
+    }
+    //OPENING MAPS - tell mapkit what to do when user taps callout button
+    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView,
+                 calloutAccessoryControlTapped control: UIControl) {
+        
+        self.location = view.annotation as! Artwork
+        print("tapped")
+        performSegue(withIdentifier: "ShowClue", sender: Any?.self)
+        print("self.location.longNextClue: ",self.location?.longNextClue)
+        print("location.description: ", self.location?.description)
+        print("self.location.title: ", self.location?.title!)
+        print("self.location.image: ", self.location?.image!)
+        print("self.location.identifyer: ", self.location?.identifyer)
+        print("self.location.discipline: ", self.location?.discipline)
+        print("self.location.coordinate: ", self.location?.coordinate)
+        print("self.location.tag: ", self.location?.tag)
+        
+        labelOutlet.text = self.location?.shortNextClue
+//        let launchOptions = [MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeDriving]
+//        self.location.mapItem().openInMaps(launchOptions: launchOptions)
+    }
+}
+
+extension ViewControllerOne: CancelButtonDelegate {
+    func cancelButtonPressed(by controller: UIViewController) {
+        dismiss(animated: true, completion: nil)
+        print("Pressed")
+    }
+}
